@@ -11,15 +11,12 @@ namespace LightweightPhotoSuite
         private List<string> tags;
         private string filePath;
         private DateTime exposureDate;
-        private int width_px;
-        private int height_px;
 
-        public Photo(string filePath, DateTime exposureDate, int width_px, int height_px)
+        public Photo(string filePath, string exposureDate)
         {
+            Logger.log(exposureDate);
             this.filePath = filePath;
-            this.exposureDate = exposureDate;
-            this.width_px = width_px;
-            this.height_px = height_px;
+            this.exposureDate = new DateTime();
         }
 
         public bool addTag(string tag)
