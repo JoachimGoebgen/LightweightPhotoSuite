@@ -51,7 +51,7 @@ namespace LightweightPhotoSuite
                     try
                     {
                         FileInfo file = new FileInfo(filePath);
-                        using (FileStream fs = new FileStream(f.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        using (FileStream fs = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
                         {
                             BitmapSource img = BitmapFrame.Create(fs);
                             BitmapMetadata md = (BitmapMetadata)img.Metadata;
@@ -64,8 +64,6 @@ namespace LightweightPhotoSuite
                         Logger.log("Was not able to create photo-instance from file '" + filePath + " || " + e.ToString());
                         continue;
                     }
-
-                    newPhotos.Add(newPhoto);
                 }
             }
             
