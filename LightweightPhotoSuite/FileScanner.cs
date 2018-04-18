@@ -10,13 +10,13 @@ namespace LightweightPhotoSuite
 {
     class FileScanner
     {
-        private List<string> pathsToScan;
+        private List<string> scanPaths;
         private Dictionary<string, Photo> allScannedPhotos;
         private HashSet<string> allScannedPhotoPaths;
 
         public FileScanner()
         {
-            pathsToScan = new List<string>();
+            scanPaths = new List<string>();
             allScannedPhotos = new Dictionary<string, Photo>();
         }
 
@@ -28,8 +28,8 @@ namespace LightweightPhotoSuite
         private List<Photo> scanNewPhotos()
         {
             List<Photo> newPhotos = new List<Photo>();
-            string[] paths = new string[pathsToScan.Count];
-            pathsToScan.CopyTo(paths);
+            string[] paths = new string[scanPaths.Count];
+            scanPaths.CopyTo(paths);
 
             for (int i = 0; i < paths.Length; i++)
             {
@@ -43,8 +43,7 @@ namespace LightweightPhotoSuite
                     Logger.log("Was not able to open folder '" + paths[i] + " || " + e.ToString());
                     continue;
                 }
-
-                Photo newPhoto;
+                
                 IEnumerable<string> newPhotoFilePaths = allPhotoFilePaths.Where(p => !allScannedPhotoPaths.Contains(p));
                 foreach (string filePath in newPhotoFilePaths)
                 {
@@ -67,8 +66,12 @@ namespace LightweightPhotoSuite
                 }
             }
             
-
             return newPhotos;
+        }
+
+        public string[] getAllScanPathsCopy()
+        {
+            return scanPaths.ToArray();
         }
     }
 }

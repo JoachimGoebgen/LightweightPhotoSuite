@@ -8,31 +8,30 @@ namespace LightweightPhotoSuite
 {
     class Photo
     {
-        private List<string> tags;
+        private List<Tag> tags;
         private string filePath;
         private DateTime exposureDate;
 
         public Photo(string filePath, string exposureDate)
         {
-            Logger.log(exposureDate);
+            this.tags = new List<Tag>();
             this.filePath = filePath;
+            Logger.log(exposureDate);
             this.exposureDate = new DateTime();
         }
 
-        public bool addTag(string tag)
+        /// <summary>
+        /// Must only be called by PhotoDatabase or we'll end up with inconsistent data!
+        /// </summary>
+        /// <param name="tag"></param>
+        public void addTag(Tag tag)
         {
-            if (!tags.Contains(tag))
-            {
-                tags.Add(tag);
-                return true;
-            }
-
-            return false;
+            tags.Add(tag);
         }
 
-        public List<string> getTags()
+        public Tag[] getTagsCopy()
         {
-            return tags.ToList(); // shallow copy
+            return tags.ToArray();
         }
 
         public string getFilePath()
