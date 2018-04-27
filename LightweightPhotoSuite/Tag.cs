@@ -8,11 +8,8 @@ namespace LightweightPhotoSuite
 {
     class Tag
     {
-        private static Dictionary<int, Tag> idToTag;
         private static Dictionary<string, Tag> nameToTag;
-        private static int idCounter;
-
-        public readonly int id;
+        
         public string name { get; private set; }
 
         /// <summary>
@@ -23,7 +20,6 @@ namespace LightweightPhotoSuite
         private Tag(string name)
         {
             this.name = name;
-            id = idCounter++;
         }
         
         public static Tag GiveTag(string name)
@@ -35,7 +31,6 @@ namespace LightweightPhotoSuite
             else
             {
                 Tag newTag = new Tag(name);
-                idToTag.Add(newTag.id, newTag);
                 nameToTag.Add(newTag.name, newTag);
                 return newTag;
             }
@@ -54,6 +49,11 @@ namespace LightweightPhotoSuite
                 nameToTag.Add(newName, this);
                 return true;
             }
+        }
+
+        public override string ToString()
+        {
+            return name;
         }
     }
 }
