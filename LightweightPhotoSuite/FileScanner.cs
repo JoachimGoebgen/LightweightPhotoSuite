@@ -25,9 +25,9 @@ namespace LightweightPhotoSuite
 
         }
 
-        private List<Photo> scanNewPhotos()
+        private List<PhotoStub> scanNewPhotos()
         {
-            List<Photo> newPhotos = new List<Photo>();
+            List<PhotoStub> newPhotos = new List<PhotoStub>();
             string[] paths = new string[scanPaths.Count];
             scanPaths.CopyTo(paths);
 
@@ -54,8 +54,7 @@ namespace LightweightPhotoSuite
                         {
                             BitmapSource img = BitmapFrame.Create(fs);
                             BitmapMetadata md = (BitmapMetadata)img.Metadata;
-                            string date = md.DateTaken;
-                            newPhotos.Add(new Photo(filePath, md.DateTaken));
+                            newPhotos.Add(new PhotoStub(filePath, DateTime.Parse(md.DateTaken)));
                         }
                     }
                     catch (Exception e)
