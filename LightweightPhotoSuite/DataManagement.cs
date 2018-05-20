@@ -9,16 +9,21 @@ namespace LightweightPhotoSuite
 {
     class DataManagement
     {
+        public static Logger logger;
+
         private FileScanner fileScanner;
         private PhotoDatabase photoDatabase;
         private TagDatabase tagDatabase;
 
         public DataManagement()
         {
-
+            logger = new Logger(Constants.logFolderPath, Constants.logFileName);
+            fileScanner = new FileScanner();
+            tagDatabase = new TagDatabase();
+            photoDatabase = new PhotoDatabase(tagDatabase);
         }
 
-        public DataManagement(string dbFilePath)
+        public DataManagement(string dbFilePath) : this()
         {
             createFromFile(dbFilePath);
         }
@@ -59,7 +64,7 @@ namespace LightweightPhotoSuite
             }
             catch (Exception e)
             {
-                Logger.log("Was not able to read from db-file '" + dbFilePath + " || " + e.ToString());
+                logger.log("Was not able to read from db-file '" + dbFilePath + " || " + e.ToString());
                 return;
             }
 
@@ -115,7 +120,7 @@ namespace LightweightPhotoSuite
             }
             catch (Exception e)
             {
-                Logger.log("db-file is corrupted: '" + dbFilePath + " || " + e.ToString());
+                logger.log("db-file is corrupted: '" + dbFilePath + " || " + e.ToString());
             }
 
         }
@@ -150,7 +155,7 @@ namespace LightweightPhotoSuite
             }
             catch (Exception e)
             {
-                Logger.log("Was not able to truncate or write to db-file '" + dbFilePath + " || " + e.ToString());
+                logger.log("Was not able to truncate or write to db-file '" + dbFilePath + " || " + e.ToString());
             }
         }
 

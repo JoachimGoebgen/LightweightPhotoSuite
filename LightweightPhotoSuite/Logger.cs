@@ -10,23 +10,22 @@ namespace LightweightPhotoSuite
 {
     class Logger
     {
-        private static string logFolderPath;
-        private static string logFileFullPath;
-        private static Timer fileWriteTimer;
+        private string logFileFullPath;
+        private Timer fileWriteTimer;
 
-        private static Queue<string> entriesToWrite;
+        private Queue<string> entriesToWrite;
 
-        public static void init()
+        public Logger(string logFolderPath, string logFilePath)
         {
             DateTime dateTime = DateTime.Now;
             string timestamp = dateTime.Year.ToString() + '-' + dateTime.Month.ToString() + '-' + dateTime.Day.ToString() + '_' + dateTime.Hour.ToString() + ':' + dateTime.Minute.ToString() + ':' + dateTime.Second.ToString();
-            logFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            logFileFullPath = logFolderPath + @"\" + timestamp + "_LPS-log.txt";
+            logFileFullPath = logFolderPath + @"\" + timestamp + "_" + logFilePath + ".txt";
+            entriesToWrite = new Queue<string>();
             fileWriteTimer = new Timer(2000);
             fileWriteTimer.Elapsed += write;
         }
 
-        public static void log(string str)
+        public void log(string str)
         {
             DateTime dateTime = DateTime.Now;
             string timestamp = dateTime.Hour.ToString() + ':' + dateTime.Minute.ToString() + ':' + dateTime.Second.ToString() + ' ';
@@ -37,7 +36,7 @@ namespace LightweightPhotoSuite
             }
         }
 
-        private static void write(object sender, ElapsedEventArgs e)
+        private void write(object sender, ElapsedEventArgs e)
         {
             lock (entriesToWrite)
             {

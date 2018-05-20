@@ -13,7 +13,13 @@ namespace LightweightPhotoSuite
         private Dictionary<string, Tag> nameToTag;
         private Dictionary<int, Tag> idToTag;
         
-        public TagDatabase(List<Tag> tags)
+        public TagDatabase()
+        {
+            nameToTag = new Dictionary<string, Tag>();
+            idToTag = new Dictionary<int, Tag>();
+        }
+
+        public TagDatabase(List<Tag> tags) : this()
         {
             foreach (Tag tag in tags)
             {
@@ -47,23 +53,7 @@ namespace LightweightPhotoSuite
             else
                 return null;
         }
-
-        public bool RenameTag(Tag tag, string newName)
-        {
-            if (nameToTag.ContainsKey(newName))
-            {
-                return false;
-            }
-            else
-            {
-
-                name = newName;
-                nameToTag.Remove(name);
-                nameToTag.Add(newName, this);
-                return true;
-            }
-        }
-
+        
         public Tag[] getAllTagsCopy()
         {
             Tag[] allTagsCopy;
