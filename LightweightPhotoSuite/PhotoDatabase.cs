@@ -9,17 +9,29 @@ namespace LightweightPhotoSuite
     class PhotoDatabase
     {
         object lockObj;
+        private TagDatabase tagDB;
+        private Dictionary<Tag, HashSet<Photo>> tagToPhotos;
+        private Dictionary<Photo, HashSet<Tag>> photoToTags;
 
-        private List<Tag> allTags;
-        private List<Photo> allPhotos;
-        private Dictionary<Tag, List<Photo>> tagToPhoto;
+        public PhotoDatabase(TagDatabase tagDB)
+        {
+            this.tagDB = tagDB;
+            tagToPhotos = new Dictionary<Tag, HashSet<Photo>>();
+            photoToTags = new Dictionary<Photo, HashSet<Tag>>();
+        }
+
+        public PhotoDatabase(TagDatabase tagDB, List<Photo> photos, List<List<Tag>> containedTags) : this(tagDB)
+        {
+            for (int i = 0; i < photos.Count; i++)
+                add(photos[i], containedTags[i]);
+        }
 
         public Tag[] getAllTagsCopy()
         {
             Tag[] allTagsCopy;
 
             lock (lockObj)
-                allTagsCopy = allTags.ToArray();
+                allTagsCopy = tagDB.getAllTagsCopy();
             
             return allTagsCopy;
         }
@@ -29,49 +41,62 @@ namespace LightweightPhotoSuite
             Photo[] allPhotosCopy;
 
             lock (lockObj)
-                allPhotosCopy = allPhotos.ToArray();
+                allPhotosCopy = photoToTags.Keys.ToArray();
 
             return allPhotosCopy;
         }
 
-        public void addPhoto(Photo photo)
+        public void add(Photo photo)
         {
-
+            add(photo, tagDB.GiveTag(Constants.todoTag));
         }
 
-        public void addPhotos(IEnumerable<Photo> photos)
+        public void add(IEnumerable<Photo> photos)
         {
-
+            foreach (Photo photo in photos)
+                add(photo);
         }
 
-        public void addPhotoWithTags(Photo photo, IEnumerable<Tag> tags)
+        public void add(Photo photo, IEnumerable<Tag> tags)
         {
-
+            foreach (Tag tag in tags)
+                add(photo, tag);
         }
 
-        public void addPhotosWithTags(IEnumerable<Photo> photos, IEnumerable<Tag> tags)
+        public void add(IEnumerable<Photo> photos, Tag tag)
         {
-
+            foreach (Photo photo in photos)
+                add(photo, tag);
         }
 
-        public void addTag(Photo photo, Tag tag)
+        public void add(IEnumerable<Photo> photos, IEnumerable<Tag> tags)
         {
-
+            foreach (Photo photo in photos)
+                add(photo, tags);
         }
 
-        public void addTags(Photo photo, IEnumerable<Tag> tags)
+        public void add(Photo photo, Tag tag)
         {
+            lock (lockObj)
+            {
+                if (photoToTags.ContainsKey(photo))
+                {
+                    if (!photoToTags[photo].Contains(tag))
+                        photoToTags[photo].Add(tag);
+                }
+                else
+                    photoToTags.Add(photo, new HashSet<Tag>(new Tag[1] { tag }));
 
+                if (tagToPhotos.ContainsKey(tag))
+                {
+                    if (!tagToPhotos[tag].Contains(photo))
+                        tagToPhotos[tag].Add(photo);
+                }
+                else
+                    tagToPhotos.Add(tag, new HashSet<Photo>(new Photo[1] { photo }));
+            }
+            
         }
-
-        public void addTag(IEnumerable<Photo> photos, Tag tag)
-        {
-
-        }
-
-        public void addTags(IEnumerable<Photo> photos, IEnumerable<Tag> tags)
-        {
-
-        }
+        
     }
 }

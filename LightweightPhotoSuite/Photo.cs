@@ -6,26 +6,27 @@ using System.Threading.Tasks;
 
 namespace LightweightPhotoSuite
 {
-    class Photo
+    class Photo : PhotoStub
     {
         private List<Tag> tags;
-        private string filePath;
-        private DateTime exposureDate;
 
-        public Photo(PhotoStub stub, List<Tag> tagListRef)
+        public Photo(PhotoStub stub, List<Tag> tagListRef) : base(stub.filePath, stub.exposureDate)
         {
-            filePath = stub.filePath;
-            exposureDate = stub.exposureDate;
+            tags = tagListRef; // reference! Tags get changed in this list if changed in original list.
+        }
+
+        private Photo(string filePath, DateTime exposureDate, List<Tag> tagListRef) : base(filePath, exposureDate)
+        {
             tags = tagListRef; // reference! Tags get changed in this list if changed in original list.
         }
 
         public Tag[] getTagsCopy()
         {
             Tag[] ret;
+
             lock (tags)
-            {
                 ret = tags.ToArray();
-            }
+
             return ret;
         }
 
@@ -36,14 +37,26 @@ namespace LightweightPhotoSuite
 
         public override string ToString()
         {
-            string str = filePath + '|';
+            string str = filePath + Constants.splitChar;
             lock (tags)
             {
                 for (int i = 0; i < tags.Count; i++)
-                    str += tags[i].name + ',';
+                    str += tags[i].id + Constants.subSplitChar;
             }
-            str += '|' + exposureDate.ToString();
+            str += Constants.splitChar + exposureDate.ToString();
             return str;
+        }
+
+        // tagList gets filled!
+        internal static Photo FromString(string element, TagDatabase tagDB, List<Tag> emptyTagList)
+        {
+            string[] parts = element.Split(Constants.splitChar);
+            string[] tagIDs = parts[1].Split(Constants.subSplitChar);
+            
+            for (int i = 0; i < tagIDs.Length; i++)
+                emptyTagList.Add(tagDB.GiveTag(Int32.Parse(tagIDs[i])));
+
+            return new Photo(parts[0], DateTime.Parse(parts[2]), emptyTagList);
         }
     }
 }

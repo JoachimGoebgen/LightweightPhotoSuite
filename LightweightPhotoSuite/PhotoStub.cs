@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LightweightPhotoSuite
 {
-    struct PhotoStub
+    class PhotoStub
     {
         public string filePath;
         public DateTime exposureDate;
