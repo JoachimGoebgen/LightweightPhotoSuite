@@ -11,66 +11,132 @@ namespace LightweightPhotoSuite
     class FileScanner
     {
         private List<string> scanPaths;
-        private Dictionary<string, Photo> allScannedPhotos;
-        private HashSet<string> allScannedPhotoPaths;
+        private HashSet<string> scannedPhotoPaths;
 
         public FileScanner()
         {
             scanPaths = new List<string>();
-            allScannedPhotos = new Dictionary<string, Photo>();
+            scannedPhotoPaths = new HashSet<string>();
         }
 
-        public FileScanner(DataManagement db)
+        public FileScanner(List<string> scanPaths, List<Photo> photos)
         {
-
+            this.scanPaths = scanPaths;
+            scannedPhotoPaths = new HashSet<string>();
+            for (int i = 0; i < photos.Count; i++)
+            {
+                scannedPhotoPaths.Add(photos[i].filePath);
+            }
         }
 
-        private List<PhotoStub> scanNewPhotos()
+        private List<PhotoStub> scanAllPaths()
         {
             List<PhotoStub> newPhotos = new List<PhotoStub>();
-            string[] paths = new string[scanPaths.Count];
-            scanPaths.CopyTo(paths);
+            string[] paths = getScanPathsCopy();
 
             for (int i = 0; i < paths.Length; i++)
             {
-                IEnumerable<string> allPhotoFilePaths;
+                newPhotos.AddRange(scanPath(paths[i]));
+            }
+            
+            return newPhotos;
+        }
+
+        public string[] getScanPathsCopy()
+        {
+            string[] scanPathsCopy;
+
+            lock (scanPaths)
+                scanPathsCopy = scanPaths.ToArray();
+
+            return scanPathsCopy;
+        }
+
+        public bool addScanPath(string path)
+        {
+            bool success = true;
+            lock (scanPaths)
+            {
+                if (pathIsSubPath(path))
+                    success = false;
+                else
+                    scanPaths.Add(path);
+            }
+            return success;
+        }
+
+        public bool addScanPathAndScan(string path, out List<PhotoStub> photos)
+        {
+            bool success = true;
+            lock (scanPaths)
+            {
+                if (pathIsSubPath(path))
+                    success = false;
+                else
+                    scanPaths.Add(path);
+            }
+
+            if (success)
+                photos = scanPath(path);
+            else
+                photos = new List<PhotoStub>();
+
+            return success;
+        }
+
+        private List<PhotoStub> scanPath(string path)
+        {
+            List<PhotoStub> newPhotos = new List<PhotoStub>();
+            
+            IEnumerable<string> allPhotoFilePaths;
+            try
+            {
+                allPhotoFilePaths = Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories).Where(s => s.EndsWith(".jpg") || s.EndsWith(".jpeg")).ToArray();
+            }
+            catch (Exception e)
+            {
+                Logger.log("Was not able to open folder '" + path + " || " + e.ToString());
+                return null;
+            }
+
+            IEnumerable<string> newPhotoFilePaths = allPhotoFilePaths.Where(p => !scannedPhotoPaths.Contains(p));
+            foreach (string filePath in newPhotoFilePaths)
+            {
                 try
                 {
-                    allPhotoFilePaths = Directory.EnumerateFiles(paths[i], "*.*", SearchOption.AllDirectories).Where(s => s.EndsWith(".jpg") || s.EndsWith(".jpeg")).ToArray();
+                    FileInfo file = new FileInfo(filePath);
+                    using (FileStream fs = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        BitmapSource img = BitmapFrame.Create(fs);
+                        BitmapMetadata md = (BitmapMetadata)img.Metadata;
+                        PhotoStub stub = new PhotoStub(filePath, DateTime.Parse(md.DateTaken));
+                        newPhotos.Add(stub);
+                        scannedPhotoPaths.Add(filePath);
+                    }
                 }
                 catch (Exception e)
                 {
-                    Logger.log("Was not able to open folder '" + paths[i] + " || " + e.ToString());
+                    Logger.log("Was not able to create photo-instance from file '" + filePath + " || " + e.ToString());
                     continue;
-                }
-                
-                IEnumerable<string> newPhotoFilePaths = allPhotoFilePaths.Where(p => !allScannedPhotoPaths.Contains(p));
-                foreach (string filePath in newPhotoFilePaths)
-                {
-                    try
-                    {
-                        FileInfo file = new FileInfo(filePath);
-                        using (FileStream fs = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
-                        {
-                            BitmapSource img = BitmapFrame.Create(fs);
-                            BitmapMetadata md = (BitmapMetadata)img.Metadata;
-                            newPhotos.Add(new PhotoStub(filePath, DateTime.Parse(md.DateTaken)));
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.log("Was not able to create photo-instance from file '" + filePath + " || " + e.ToString());
-                        continue;
-                    }
                 }
             }
             
             return newPhotos;
         }
 
-        public string[] getAllScanPathsCopy()
+        private bool pathIsSubPath(string path)
         {
-            return scanPaths.ToArray();
+            for (int i = 0; i < scanPaths.Count; i++)
+            {
+                if (path.StartsWith(scanPaths[i]))
+                {
+                    Logger.log('\'' + path + "' is sub-path from '" + scanPaths[i] + '\'');
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
+
+
