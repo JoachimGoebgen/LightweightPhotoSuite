@@ -95,7 +95,7 @@ namespace LightweightPhotoSuite
             }
             catch (Exception e)
             {
-                Logger.log("Was not able to open folder '" + path + " || " + e.ToString());
+                DataManagement.logger.log("Was not able to open folder '" + path + " || " + e.ToString());
                 return null;
             }
 
@@ -116,7 +116,7 @@ namespace LightweightPhotoSuite
                 }
                 catch (Exception e)
                 {
-                    Logger.log("Was not able to create photo-instance from file '" + filePath + " || " + e.ToString());
+                    DataManagement.logger.log("Was not able to create photo-instance from file '" + filePath + " || " + e.ToString());
                     continue;
                 }
             }
@@ -130,7 +130,7 @@ namespace LightweightPhotoSuite
             {
                 if (path.StartsWith(scanPaths[i]))
                 {
-                    Logger.log('\'' + path + "' is sub-path from '" + scanPaths[i] + '\'');
+                    DataManagement.logger.log('\'' + path + "' is sub-path from '" + scanPaths[i] + '\'');
                     return true;
                 }
             }

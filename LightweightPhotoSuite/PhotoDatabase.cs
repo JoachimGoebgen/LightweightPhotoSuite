@@ -8,7 +8,7 @@ namespace LightweightPhotoSuite
 {
     class PhotoDatabase
     {
-        object lockObj;
+        object lockObj = new object();
         private TagDatabase tagDB;
         private Dictionary<Tag, HashSet<Photo>> tagToPhotos;
         private Dictionary<Photo, HashSet<Tag>> photoToTags;
