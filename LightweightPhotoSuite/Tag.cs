@@ -8,52 +8,32 @@ namespace LightweightPhotoSuite
 {
     class Tag
     {
-        private static Dictionary<int, Tag> idToTag;
-        private static Dictionary<string, Tag> nameToTag;
-        private static int idCounter;
+        public static int idCounter;
 
-        public readonly int id;
         public string name { get; private set; }
+        public readonly int id;
 
-        /// <summary>
-        /// Do not call! Call Tag.GiveTag() instead.
-        /// </summary>
-        public Tag() { }
-
-        private Tag(string name)
+        public Tag(string name)
         {
             this.name = name;
             id = idCounter++;
         }
-        
-        public static Tag GiveTag(string name)
+
+        private Tag(string name, int id)
         {
-            if (nameToTag.ContainsKey(name))
-            {
-                return nameToTag[name];
-            }
-            else
-            {
-                Tag newTag = new Tag(name);
-                idToTag.Add(newTag.id, newTag);
-                nameToTag.Add(newTag.name, newTag);
-                return newTag;
-            }
+            this.name = name;
+            this.id = id;
         }
 
-        public bool rename(string newName)
+        public override string ToString()
         {
-            if (nameToTag.ContainsKey(newName))
-            {
-                return false;
-            }
-            else
-            {
-                name = newName;
-                nameToTag.Remove(name);
-                nameToTag.Add(newName, this);
-                return true;
-            }
+            return name + Constants.splitChar + id;
+        }
+
+        public static Tag FromString(string str)
+        {
+            string[] temp = str.Split(Constants.splitChar);
+            return new Tag(temp[0], Int32.Parse(temp[1]));
         }
     }
 }

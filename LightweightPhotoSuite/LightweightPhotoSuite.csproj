@@ -54,11 +54,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DatabaseImage.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="PhotoStub.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Tag.cs" />
+    <Compile Include="TagDatabase.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
