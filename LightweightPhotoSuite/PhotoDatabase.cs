@@ -9,31 +9,45 @@ namespace LightweightPhotoSuite
     class PhotoDatabase
     {
         object lockObj = new object();
-        private TagDatabase tagDB;
         private Dictionary<Tag, HashSet<Photo>> tagToPhotos;
         private Dictionary<Photo, HashSet<Tag>> photoToTags;
 
-        public PhotoDatabase(TagDatabase tagDB)
+        public PhotoDatabase()
         {
-            this.tagDB = tagDB;
             tagToPhotos = new Dictionary<Tag, HashSet<Photo>>();
             photoToTags = new Dictionary<Photo, HashSet<Tag>>();
         }
 
-        public PhotoDatabase(TagDatabase tagDB, List<Photo> photos, List<List<Tag>> containedTags) : this(tagDB)
+        public PhotoDatabase(List<Photo> photos, List<HashSet<Tag>> containedTags) : this()
         {
             for (int i = 0; i < photos.Count; i++)
-                add(photos[i], containedTags[i]);
+            {
+                photoToTags.Add(photos[i], containedTags[i]);
+                addTags(photos[i], containedTags[i]);
+            }
         }
 
-        public Tag[] getAllTagsCopy()
+        public bool remove(Photo photo)
         {
-            Tag[] allTagsCopy;
+            try
+            {
+                lock (lockObj)
+                {
+                    foreach (Tag tag in photoToTags[photo])
+                    {
+                        tagToPhotos[tag].Remove(photo);
+                    }
 
-            lock (lockObj)
-                allTagsCopy = tagDB.getAllTagsCopy();
-            
-            return allTagsCopy;
+                    photoToTags.Remove(photo);
+                }
+            }
+            catch (Exception e)
+            {
+                DataManagement.logger.log("An error occurred while removing a photo: " + photo.ToString());
+                return false;
+            }
+
+            return true;
         }
 
         public Photo[] getAllPhotosCopy()
@@ -46,36 +60,44 @@ namespace LightweightPhotoSuite
             return allPhotosCopy;
         }
 
-        public void add(Photo photo)
+        public void addPhotos(IEnumerable<PhotoStub> photoStubs)
         {
-            add(photo, tagDB.GiveTag(Constants.todoTag));
+            foreach (PhotoStub photoStub in photoStubs)
+                addPhoto(photoStub);
         }
 
-        public void add(IEnumerable<Photo> photos)
+        public void addPhoto(PhotoStub photoStub)
         {
-            foreach (Photo photo in photos)
-                add(photo);
+            HashSet<Tag> tagListRef = new HashSet<Tag>();
+            Photo photo = new Photo(photoStub, tagListRef);
+            photoToTags.Add(photo, tagListRef);
         }
 
-        public void add(Photo photo, IEnumerable<Tag> tags)
+        public void addTags(Photo photo, IEnumerable<Tag> tags)
         {
             foreach (Tag tag in tags)
-                add(photo, tag);
+                addTag(photo, tag);
         }
 
-        public void add(IEnumerable<Photo> photos, Tag tag)
+        public void addTag(IEnumerable<Photo> photos, Tag tag)
         {
             foreach (Photo photo in photos)
-                add(photo, tag);
+                addTag(photo, tag);
         }
 
-        public void add(IEnumerable<Photo> photos, IEnumerable<Tag> tags)
+        public void addTags(IEnumerable<Photo> photos, IEnumerable<Tag> tags)
         {
             foreach (Photo photo in photos)
-                add(photo, tags);
+                addTags(photo, tags);
         }
 
-        public void add(Photo photo, Tag tag)
+        /// <summary>
+        /// Adds a new tag to an existing photo.
+        /// </summary>
+        /// <param name="photo"></param>
+        /// <param name="tag"></param>
+        /// <returns>true if the tag was not already contained</returns>
+        public void addTag(Photo photo, Tag tag)
         {
             lock (lockObj)
             {
@@ -85,7 +107,7 @@ namespace LightweightPhotoSuite
                         photoToTags[photo].Add(tag);
                 }
                 else
-                    photoToTags.Add(photo, new HashSet<Tag>(new Tag[1] { tag }));
+                    throw new InvalidOperationException("Photo was not contained in the database: " + photo.ToString());
 
                 if (tagToPhotos.ContainsKey(tag))
                 {
@@ -95,8 +117,7 @@ namespace LightweightPhotoSuite
                 else
                     tagToPhotos.Add(tag, new HashSet<Photo>(new Photo[1] { photo }));
             }
-            
         }
-        
+
     }
 }

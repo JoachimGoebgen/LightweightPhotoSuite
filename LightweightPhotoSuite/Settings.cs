@@ -8,5 +8,6 @@ namespace LightweightPhotoSuite
 {
     class Settings
     {
+        internal static string dbFilePath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
     }
 }

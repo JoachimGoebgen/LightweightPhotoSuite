@@ -24,5 +24,20 @@ namespace LightweightPhotoSuite
         {
             InitializeComponent();
         }
+
+        private void Menu_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+        
+        private void TagsMenu_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void PhotosMenu_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

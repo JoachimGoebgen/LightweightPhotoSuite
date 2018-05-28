@@ -20,7 +20,7 @@ namespace LightweightPhotoSuite
             logger = new Logger(Constants.logFolderPath, Constants.logFileName);
             fileScanner = new FileScanner();
             tagDatabase = new TagDatabase();
-            photoDatabase = new PhotoDatabase(tagDatabase);
+            photoDatabase = new PhotoDatabase();
         }
 
         public DataManagement(string dbFilePath) : this()
@@ -28,20 +28,19 @@ namespace LightweightPhotoSuite
             createFromFile(dbFilePath);
         }
 
-
-        public void doAddTag(Photo photo)
+        public void doAddTag(Photo photo, string tag)
         {
-
+            photoDatabase.addTag(photo, tagDatabase.GiveTag(tag));
         }
 
         public void doRemoveTag(Photo photo)
         {
-
+            photoDatabase.remove(photo);
         }
 
         public void doBackup()
         {
-
+            saveToFile(Settings.dbFilePath, fileScanner.getScanPathsCopy(), tagDatabase.getAllTagsCopy(), photoDatabase.getAllPhotosCopy());
         }
 
         public void doNewPhotoScan()
@@ -51,7 +50,7 @@ namespace LightweightPhotoSuite
 
         public void doFullScan()
         {
-
+            photoDatabase.addPhotos(fileScanner.scanAllPaths());
         }
 
         private void createFromFile(string dbFilePath)
@@ -72,7 +71,7 @@ namespace LightweightPhotoSuite
             List<Tag> tags = new List<Tag>(10);
             List<string> scanPaths = new List<string>(10);
             List<Photo> photos = new List<Photo>(lines.Length);
-            List<List<Tag>> tagsOnPhoto = new List<List<Tag>>(photos.Count);
+            List<HashSet<Tag>> tagsOnPhoto = new List<HashSet<Tag>>(photos.Count);
 
             try
             {
@@ -90,7 +89,7 @@ namespace LightweightPhotoSuite
                                 break;
 
                             case 1:
-                                photoDatabase = new PhotoDatabase(tagDatabase, photos, tagsOnPhoto);
+                                photoDatabase = new PhotoDatabase(photos, tagsOnPhoto);
                                 break;
 
                             case 2:

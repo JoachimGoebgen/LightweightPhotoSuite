@@ -23,6 +23,7 @@ namespace LightweightPhotoSuite
             entriesToWrite = new Queue<string>();
             fileWriteTimer = new Timer(2000);
             fileWriteTimer.Elapsed += write;
+            fileWriteTimer.Start();
         }
 
         public void log(string str)
