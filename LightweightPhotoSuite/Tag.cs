@@ -25,6 +25,11 @@ namespace LightweightPhotoSuite
             this.id = id;
         }
 
+        public void rename(string newName)
+        {
+            name = newName;
+        }
+
         public override string ToString()
         {
             return name + Constants.splitChar + id;

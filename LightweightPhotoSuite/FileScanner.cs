@@ -29,7 +29,7 @@ namespace LightweightPhotoSuite
             }
         }
 
-        private List<PhotoStub> scanAllPaths()
+        public List<PhotoStub> scanAllPaths()
         {
             List<PhotoStub> newPhotos = new List<PhotoStub>();
             string[] paths = getScanPathsCopy();

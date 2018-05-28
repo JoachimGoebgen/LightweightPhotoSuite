@@ -14,6 +14,5 @@ namespace LightweightPhotoSuite
         internal const char splitChar = '|';
         internal const char subSplitChar = ',';
         internal const string lineSeparator = "";
-        internal const string todoTag = "ToDo";
     }
 }

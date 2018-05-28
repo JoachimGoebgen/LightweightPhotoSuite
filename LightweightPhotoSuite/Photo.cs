@@ -8,14 +8,14 @@ namespace LightweightPhotoSuite
 {
     class Photo : PhotoStub
     {
-        private List<Tag> tags;
+        private HashSet<Tag> tags;
 
-        public Photo(PhotoStub stub, List<Tag> tagListRef) : base(stub.filePath, stub.exposureDate)
+        public Photo(PhotoStub stub, HashSet<Tag> tagListRef) : base(stub.filePath, stub.exposureDate)
         {
             tags = tagListRef; // reference! Tags get changed in this list if changed in original list.
         }
 
-        private Photo(string filePath, DateTime exposureDate, List<Tag> tagListRef) : base(filePath, exposureDate)
+        private Photo(string filePath, DateTime exposureDate, HashSet<Tag> tagListRef) : base(filePath, exposureDate)
         {
             tags = tagListRef; // reference! Tags get changed in this list if changed in original list.
         }
@@ -40,15 +40,15 @@ namespace LightweightPhotoSuite
             string str = filePath + Constants.splitChar;
             lock (tags)
             {
-                for (int i = 0; i < tags.Count; i++)
-                    str += tags[i].id + Constants.subSplitChar;
+                foreach (Tag tag in tags)
+                    str += tag.id + Constants.subSplitChar;
             }
             str += Constants.splitChar + exposureDate.ToString();
             return str;
         }
 
         // tagList gets filled!
-        internal static Photo FromString(string element, TagDatabase tagDB, List<Tag> emptyTagList)
+        internal static Photo FromString(string element, TagDatabase tagDB, HashSet<Tag> emptyTagList)
         {
             string[] parts = element.Split(Constants.splitChar);
             string[] tagIDs = parts[1].Split(Constants.subSplitChar);
@@ -58,5 +58,6 @@ namespace LightweightPhotoSuite
 
             return new Photo(parts[0], DateTime.Parse(parts[2]), emptyTagList);
         }
+
     }
 }
