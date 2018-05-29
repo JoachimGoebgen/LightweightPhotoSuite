@@ -36,23 +36,25 @@ namespace LightweightPhotoSuite
 
             for (int i = 0; i < paths.Length; i++)
             {
-                newPhotos.AddRange(scanPath(paths[i]));
+                newPhotos.AddRange(scan(paths[i]));
             }
             
             return newPhotos;
         }
 
-        public string[] getScanPathsCopy()
+        public bool addAndScanPath(string path, out List<PhotoStub> newPhotos)
         {
-            string[] scanPathsCopy;
+            if (addPath(path))
+            {
+                newPhotos = scan(path);
+                return true;
+            }
 
-            lock (scanPaths)
-                scanPathsCopy = scanPaths.ToArray();
-
-            return scanPathsCopy;
+            newPhotos = new List<PhotoStub>();
+            return false;
         }
 
-        public bool addScanPath(string path)
+        public bool addPath(string path)
         {
             bool success = true;
             lock (scanPaths)
@@ -63,6 +65,16 @@ namespace LightweightPhotoSuite
                     scanPaths.Add(path);
             }
             return success;
+        }
+
+        public string[] getScanPathsCopy()
+        {
+            string[] scanPathsCopy;
+
+            lock (scanPaths)
+                scanPathsCopy = scanPaths.ToArray();
+
+            return scanPathsCopy;
         }
 
         public bool addScanPathAndScan(string path, out List<PhotoStub> photos)
@@ -77,15 +89,20 @@ namespace LightweightPhotoSuite
             }
 
             if (success)
-                photos = scanPath(path);
+                photos = scan(path);
             else
                 photos = new List<PhotoStub>();
 
             return success;
         }
 
-        private List<PhotoStub> scanPath(string path)
+        public List<PhotoStub> scan(string path)
         {
+            if (!scanPaths.Contains(path))
+            {
+                DataManagement.logger.log("Scanning a path that is not contained in the list of all sacn-paths is not possible: '" + path);
+            }
+
             List<PhotoStub> newPhotos = new List<PhotoStub>();
             
             IEnumerable<string> allPhotoFilePaths;

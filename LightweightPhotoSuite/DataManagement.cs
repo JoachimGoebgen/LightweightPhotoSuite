@@ -15,6 +15,7 @@ namespace LightweightPhotoSuite
         private PhotoDatabase photoDatabase;
         private TagDatabase tagDatabase;
 
+
         public DataManagement()
         {
             logger = new Logger(Constants.logFolderPath, Constants.logFileName);
@@ -43,15 +44,21 @@ namespace LightweightPhotoSuite
             saveToFile(Settings.dbFilePath, fileScanner.getScanPathsCopy(), tagDatabase.getAllTagsCopy(), photoDatabase.getAllPhotosCopy());
         }
 
-        public void doNewPhotoScan()
+        public void doNewPhotoScan(String path)
         {
-
+            photoDatabase.addPhotos(fileScanner.scan(path));
         }
 
         public void doFullScan()
         {
             photoDatabase.addPhotos(fileScanner.scanAllPaths());
         }
+
+        public Photo[] getPhotos(IEnumerable<Tag> tags)
+        {
+            return photoDatabase.getPhotos(tags.ToArray());
+        }
+        
 
         private void createFromFile(string dbFilePath)
         {
@@ -158,12 +165,14 @@ namespace LightweightPhotoSuite
             }
         }
 
-        private string concat(string a, string b)
+
+
+        private static string concat(string a, string b)
         {
             return a + Constants.splitChar + b;
         }
 
-        private void deconcat(string str, out string a, out string b)
+        private static void deconcat(string str, out string a, out string b)
         {
             string[] temp = str.Split('|');
             a = temp[0];
