@@ -60,6 +60,21 @@ namespace LightweightPhotoSuite
             return allPhotosCopy;
         }
 
+        public Photo[] getPhotos(Tag[] tags)
+        {
+            if (tags.Length == 0)
+                return getAllPhotosCopy();
+
+            HashSet<Photo> photos = new HashSet<Photo>(tagToPhotos[tags[0]]);
+
+            for (int i = 1; i < tags.Length; i++)
+            {
+                photos.RemoveWhere(x => !tagToPhotos[tags[i]].Contains(x)); // removes all photos which are not included in all the photo-lists of the other tags
+            }
+
+            return photos.ToArray();
+        }
+
         public void addPhotos(IEnumerable<PhotoStub> photoStubs)
         {
             foreach (PhotoStub photoStub in photoStubs)
