@@ -39,5 +39,10 @@ namespace LightweightPhotoSuite
         {
 
         }
+
+        private void TagsMenu_MouseEnter(object sender, MouseEventArgs e)
+        {
+
+        }
     }
 }
