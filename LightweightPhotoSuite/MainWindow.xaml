@@ -15,7 +15,9 @@
         <materialMenu:SideMenu x:Name="Menu"
                                MenuWidth="200"
                                Theme="Default"
-                               State="Visible" Margin="0,0,0,0" Loaded="Menu_Loaded" HorizontalAlignment="Left" MinWidth="200">
+                               State="Visible" Margin="0,0,0,0" Loaded="Menu_Loaded" HorizontalAlignment="Left" MinWidth="200" 
+                               ButtonBackground="#424242"
+                               ButtonHover="#337AB5">
             <materialMenu:SideMenu.Menu>
                 <ScrollViewer VerticalScrollBarVisibility="Hidden">
                     <StackPanel Orientation="Vertical">
@@ -26,7 +28,7 @@
                                     Foreground="WhiteSmoke" FontWeight="Bold">Welcome</TextBox>
                             </Grid>
                         </Border>
-                        <materialMenu:MenuButton Text="Tags" MouseDown="TagsMenu_MouseDown"></materialMenu:MenuButton>
+                        <materialMenu:MenuButton Text="Tags" MouseDown="TagsMenu_MouseDown" MouseEnter="TagsMenu_MouseEnter"></materialMenu:MenuButton>
                         <materialMenu:MenuButton Text="Photos" MouseDown="PhotosMenu_MouseDown"></materialMenu:MenuButton>
                     </StackPanel>
                 </ScrollViewer>

@@ -84,7 +84,7 @@ namespace LightweightPhotoSuite
             if (preloadedImageDict.TryGetValue(photoToLoad, out bmp))
             {
                 if (bmp == null) // if the photo is in the dict but null, it is currently being loaded
-                    bmp = await waitForImageLoad(photoToLoad);
+                    bmp = await waitForImageLoadAsync(photoToLoad);
             }
             else // image-loading was not even triggered for this image (happens f.e. if you request an image from a new list)
             {
@@ -159,7 +159,7 @@ namespace LightweightPhotoSuite
             return loadedImage;
         }
 
-        private async Task<BitmapImage> waitForImageLoad(Photo photoToLoad)
+        private async Task<BitmapImage> waitForImageLoadAsync(Photo photoToLoad)
         {
             BitmapImage bmp = null;
             while (preloadedImageDict.TryGetValue(photoToLoad, out bmp) && bmp == null)
