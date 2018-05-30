@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace LightweightPhotoSuite
 {
@@ -15,6 +16,20 @@ namespace LightweightPhotoSuite
         private PhotoDatabase photoDatabase;
         private TagDatabase tagDatabase;
 
+        private Queue<Photo> preloadedPhotoQueue = new Queue<Photo>();
+        private Dictionary<Photo, BitmapImage> preloadedImageDict = new Dictionary<Photo, BitmapImage>();
+        
+        public Photo activePhoto {
+            private get
+            {
+                return activePhoto;
+            }
+            set
+            {
+                activePhoto = value;
+            }
+        }
+        
 
         public DataManagement()
         {
@@ -28,6 +43,8 @@ namespace LightweightPhotoSuite
         {
             createFromFile(dbFilePath);
         }
+
+        #region GUI-communication
 
         public void doAddTag(Photo photo, string tag)
         {
@@ -54,11 +71,109 @@ namespace LightweightPhotoSuite
             photoDatabase.addPhotos(fileScanner.scanAllPaths());
         }
 
-        public Photo[] getPhotos(IEnumerable<Tag> tags)
+        public LinkedList<Photo> getPhotos(Tag[] tags)
         {
-            return photoDatabase.getPhotos(tags.ToArray());
+            return photoDatabase.getPhotos(tags);
         }
-        
+
+        public async Task<BitmapImage> loadImageFromPhotoAsync(LinkedListNode<Photo> photoListNode)
+        {
+            Photo photoToLoad = photoListNode.Value;
+            BitmapImage bmp;
+
+            if (preloadedImageDict.TryGetValue(photoToLoad, out bmp))
+            {
+                if (bmp == null) // if the photo is in the dict but null, it is currently being loaded
+                    bmp = await waitForImageLoad(photoToLoad);
+            }
+            else // image-loading was not even triggered for this image (happens f.e. if you request an image from a new list)
+            {
+                bmp = await loadImageAsync(photoToLoad);
+            }
+
+            // also asynchronously start to load all images around it
+            Task.Run(() => preloadImages(photoListNode));
+
+            return bmp;
+        }
+
+        #endregion
+
+        #region image-loading
+
+        private void preloadImages(LinkedListNode<Photo> currentPhotoListNode)
+        {
+            LinkedListNode<Photo> node = currentPhotoListNode;
+            Photo photoToLoad;
+            for (int k = 0; k < 2; k++)
+            {
+                for (int i = 0; i < Settings.imagesToPreload / 2; i++)
+                {
+                    // add all
+                    node = (k == 0 ? node.Previous : node.Next);
+                    if (node == null) // end or begin of list
+                        break;
+
+                    photoToLoad = node.Value;
+                    if (!preloadedImageDict.ContainsKey(photoToLoad))
+                    {
+                        preloadedImageDict.Add(photoToLoad, null); // a value of null indicates that the image is currently being loaded
+                        BitmapImage bmp = loadImage(photoToLoad);
+                        if (bmp != null)
+                            preloadedImageDict[photoToLoad] = bmp;
+                        else
+                            preloadedImageDict.Remove(photoToLoad);
+                    }
+                }
+            }
+
+            // throw out the oldest preloaded images
+            while (preloadedPhotoQueue.Count > Settings.imagesToPreload)
+            {
+                Photo toDispose = preloadedPhotoQueue.Dequeue();
+                preloadedImageDict[toDispose].StreamSource.Dispose();
+                preloadedImageDict.Remove(toDispose);
+            }
+        }
+
+        private async Task<BitmapImage> loadImageAsync(Photo photoToLoad)
+        {
+            return await Task.Run(() => loadImage(photoToLoad));
+        }
+
+        // does not check if it's already being loaded so don't call it twice on the same photo
+        private BitmapImage loadImage(Photo photoToLoad)
+        {
+            BitmapImage loadedImage;
+
+            try
+            {
+                loadedImage = new BitmapImage(new Uri(photoToLoad.filePath));
+            }
+            catch (Exception e)
+            {
+                DataManagement.logger.log("Could not load image from filesystem: " + photoToLoad.filePath);
+                loadedImage = null;
+            }
+
+            return loadedImage;
+        }
+
+        private async Task<BitmapImage> waitForImageLoad(Photo photoToLoad)
+        {
+            BitmapImage bmp = null;
+            while (preloadedImageDict.TryGetValue(photoToLoad, out bmp) && bmp == null)
+            {
+                // wait
+            }
+
+            return bmp; // either the loaded image or still null if the image could not be loaded
+        }
+
+
+        #endregion
+
+        #region backup
 
         private void createFromFile(string dbFilePath)
         {
@@ -165,7 +280,7 @@ namespace LightweightPhotoSuite
             }
         }
 
-
+        #endregion
 
         private static string concat(string a, string b)
         {

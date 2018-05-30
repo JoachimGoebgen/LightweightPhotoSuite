@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace LightweightPhotoSuite
 {
+    public enum LoadState { NONE, LOADING, AVAILABLE}
+
     class Photo : PhotoStub
     {
+        private BitmapImage loadedImage;
+        private LoadState loadState = LoadState.NONE;
+        private TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+
         private HashSet<Tag> tags;
 
         public Photo(PhotoStub stub, HashSet<Tag> tagListRef) : base(stub.filePath, stub.exposureDate)
