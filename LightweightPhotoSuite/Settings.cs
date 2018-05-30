@@ -9,5 +9,6 @@ namespace LightweightPhotoSuite
     class Settings
     {
         internal static string dbFilePath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+        internal static int imagesToPreload = 15;
     }
 }
