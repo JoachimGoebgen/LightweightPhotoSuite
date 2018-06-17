@@ -8,7 +8,7 @@ namespace LightweightPhotoSuite
 {
     class PhotoStub
     {
-        public string filePath;
+        public string filePath { get; private set; }
         public DateTime exposureDate;
 
         public PhotoStub(string filePath, DateTime exposureDate)

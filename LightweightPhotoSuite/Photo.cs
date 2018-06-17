@@ -7,13 +7,9 @@ using System.Windows.Media.Imaging;
 
 namespace LightweightPhotoSuite
 {
-    public enum LoadState { NONE, LOADING, AVAILABLE}
-
     class Photo : PhotoStub
     {
-        private BitmapImage loadedImage;
-        private LoadState loadState = LoadState.NONE;
-        private TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+        public BitmapImage previewBmp { get; set; } = Settings.testBmp;
 
         private HashSet<Tag> tags;
 

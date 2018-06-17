@@ -4,15 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialMenu="clr-namespace:MaterialMenu;assembly=MaterialMenu"
-        xmlns:local="clr-namespace:LightweightPhotoSuite"
+        xmlns:custom="clr-namespace:LightweightPhotoSuite"
         mc:Ignorable="d"
-        Title="MainWindow" Height="1080" Width="1920">
+        Title="MainWindow" Height="1080" Width="1920" SizeChanged="Window_SizeChanged">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        
         <materialMenu:SideMenu x:Name="Menu"
+                               Grid.Column="0"
                                MenuWidth="200"
                                Theme="Default"
                                State="Visible" Margin="0,0,0,0" Loaded="Menu_Loaded" HorizontalAlignment="Left" MinWidth="200" 
@@ -30,9 +32,29 @@
                         </Border>
                         <materialMenu:MenuButton Text="Tags" MouseDown="TagsMenu_MouseDown" MouseEnter="TagsMenu_MouseEnter"></materialMenu:MenuButton>
                         <materialMenu:MenuButton Text="Photos" MouseDown="PhotosMenu_MouseDown"></materialMenu:MenuButton>
+                        <materialMenu:MenuButton Text="Settings" MouseDown="SettingsMenu_MouseDown"></materialMenu:MenuButton>
                     </StackPanel>
                 </ScrollViewer>
             </materialMenu:SideMenu.Menu>
         </materialMenu:SideMenu>
+
+        <ListView x:Name="ImgBox" Grid.Column="1"  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <ItemsControl.ItemsPanel x:Name="subA">
+                <ItemsPanelTemplate x:Name="subB">
+                    <UniformGrid x:Name="ImgGrid" Rows="{Binding ImgBoxRows}" Columns="{Binding ImgBoxColumns}" HorizontalAlignment="Stretch"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Image Source="{Binding previewBmp}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Stretch="UniformToFill" />
+                        <TextBlock Text="{Binding filePath}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+
+
     </Grid>
 </Window>
