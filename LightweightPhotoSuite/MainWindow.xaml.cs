@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,34 +19,48 @@ using System.Windows.Shapes;
 
 namespace LightweightPhotoSuite
 {
-    /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
-    /// </summary>
+
     public partial class MainWindow : Window
     {
-        public int ImgBoxRows = 3;
-        public int ImgBoxColumns = 3;
+        private int _imgBoxColumns;
+        public int ImgBoxColumns
+        {
+            get { return _imgBoxColumns; }
+            set
+            {
+                if (_imgBoxColumns == value) return;
+                _imgBoxColumns = value;
+                RaisePropertyChanged("ImgBoxColumns");
+            }
+        }
+        public int ImgBoxRows = 4;
 
         public MainWindow()
         {
             InitializeComponent();
+            ImgBoxColumns = 4;
         }
 
         private void Menu_Loaded(object sender, RoutedEventArgs e)
         {
             LinkedList<Photo> temp = new LinkedList<Photo>();
-            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim-Laptop\Desktop\ToDo\R.I.P\Bilder Joachim\IMG_2305.JPG", new DateTime()), new HashSet<Tag>()));
-            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim-Laptop\Desktop\ToDo\R.I.P\Bilder Joachim\IMG_2305.JPG", new DateTime()), new HashSet<Tag>()));
-            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim-Laptop\Desktop\ToDo\R.I.P\Bilder Joachim\IMG_2305.JPG", new DateTime()), new HashSet<Tag>()));
-            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim-Laptop\Desktop\ToDo\R.I.P\Bilder Joachim\IMG_2305.JPG", new DateTime()), new HashSet<Tag>()));
-            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim-Laptop\Desktop\ToDo\R.I.P\Bilder Joachim\IMG_2305.JPG", new DateTime()), new HashSet<Tag>()));
-            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim-Laptop\Desktop\ToDo\R.I.P\Bilder Joachim\IMG_2305.JPG", new DateTime()), new HashSet<Tag>()));
-            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim-Laptop\Desktop\ToDo\R.I.P\Bilder Joachim\IMG_2305.JPG", new DateTime()), new HashSet<Tag>()));
-            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim-Laptop\Desktop\ToDo\R.I.P\Bilder Joachim\IMG_2305.JPG", new DateTime()), new HashSet<Tag>()));
-            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim-Laptop\Desktop\ToDo\R.I.P\Bilder Joachim\IMG_2305.JPG", new DateTime()), new HashSet<Tag>()));
+            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG", new DateTime()), new HashSet<Tag>()));
+            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG", new DateTime()), new HashSet<Tag>()));
+            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG", new DateTime()), new HashSet<Tag>()));
+            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG", new DateTime()), new HashSet<Tag>()));
+            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG", new DateTime()), new HashSet<Tag>()));
+            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG", new DateTime()), new HashSet<Tag>()));
+            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG", new DateTime()), new HashSet<Tag>()));
+            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG", new DateTime()), new HashSet<Tag>()));
+            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG", new DateTime()), new HashSet<Tag>()));
+            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG", new DateTime()), new HashSet<Tag>()));
+            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG", new DateTime()), new HashSet<Tag>()));
+            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG", new DateTime()), new HashSet<Tag>()));
+            temp.AddLast(new Photo(new PhotoStub(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG", new DateTime()), new HashSet<Tag>()));
 
             ImgBox.ItemsSource = temp.ToArray();
-            ImgBox.cont
+
+            ImgBoxColumns = 2;
         }
         
         private void TagsMenu_MouseDown(object sender, MouseButtonEventArgs e)
@@ -68,7 +85,17 @@ namespace LightweightPhotoSuite
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            
+            ImgBoxColumns = (new Random()).Next() % 9;
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void RaisePropertyChanged(string info)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(info));
         }
     }
+    
 }

@@ -38,21 +38,23 @@
             </materialMenu:SideMenu.Menu>
         </materialMenu:SideMenu>
 
-        <ListView x:Name="ImgBox" Grid.Column="1"  HorizontalAlignment="Stretch" VerticalAlignment="Top">
-            <ItemsControl.ItemsPanel x:Name="subA">
-                <ItemsPanelTemplate x:Name="subB">
-                    <UniformGrid x:Name="ImgGrid" Rows="{Binding ImgBoxRows}" Columns="{Binding ImgBoxColumns}" HorizontalAlignment="Stretch"/>
+        <ItemsControl x:Name="ImgBox" Grid.Column="1"  HorizontalAlignment="Stretch" VerticalAlignment="Top" ItemsSource="{Binding displayedImages}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid x:Name="ImgGrid" 
+                                 Rows="{Binding ImgBoxRows}" 
+                                 Columns="{Binding ImgBoxColumns}"
+                                 IsItemsHost="True"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
-            <ListView.ItemTemplate>
+            <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                        <Image Source="{Binding previewBmp}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Stretch="UniformToFill" />
-                        <TextBlock Text="{Binding filePath}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
-                    </StackPanel>
+                    <WrapPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Image Source="{Binding previewBmp}" VerticalAlignment="Top" />
+                    </WrapPanel>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
 
 

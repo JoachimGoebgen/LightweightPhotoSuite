@@ -11,6 +11,6 @@ namespace LightweightPhotoSuite
     {
         internal static string dbFilePath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
         internal static int imagesToPreload = 15;
-        internal static BitmapImage testBmp = new BitmapImage(new Uri(@"C:\Users\Joachim-Laptop\Source\Repos\LightweightPhotoSuite\LightweightPhotoSuite\Resources\testBmp.png"));
+        internal static BitmapImage testBmp = new BitmapImage(new Uri(@"C:\Users\Joachim\Dropbox\Praktikum Porsche\Bewerbungsfoto.JPG"));
     }
 }
