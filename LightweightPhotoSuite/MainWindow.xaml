@@ -4,15 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialMenu="clr-namespace:MaterialMenu;assembly=MaterialMenu"
-        xmlns:local="clr-namespace:LightweightPhotoSuite"
+        xmlns:custom="clr-namespace:LightweightPhotoSuite"
         mc:Ignorable="d"
-        Title="MainWindow" Height="1080" Width="1920">
+        Title="MainWindow" Height="1080" Width="1920" SizeChanged="Window_SizeChanged">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        
         <materialMenu:SideMenu x:Name="Menu"
+                               Grid.Column="0"
                                MenuWidth="200"
                                Theme="Default"
                                State="Visible" Margin="0,0,0,0" Loaded="Menu_Loaded" HorizontalAlignment="Left" MinWidth="200" 
@@ -30,9 +32,31 @@
                         </Border>
                         <materialMenu:MenuButton Text="Tags" MouseDown="TagsMenu_MouseDown" MouseEnter="TagsMenu_MouseEnter"></materialMenu:MenuButton>
                         <materialMenu:MenuButton Text="Photos" MouseDown="PhotosMenu_MouseDown"></materialMenu:MenuButton>
+                        <materialMenu:MenuButton Text="Settings" MouseDown="SettingsMenu_MouseDown"></materialMenu:MenuButton>
                     </StackPanel>
                 </ScrollViewer>
             </materialMenu:SideMenu.Menu>
         </materialMenu:SideMenu>
+
+        <ItemsControl x:Name="ImgBox" Grid.Column="1"  HorizontalAlignment="Stretch" VerticalAlignment="Top" ItemsSource="{Binding displayedImages}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid x:Name="ImgGrid" 
+                                 Rows="{Binding ImgBoxRows}" 
+                                 Columns="{Binding ImgBoxColumns}"
+                                 IsItemsHost="True"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <WrapPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Image Source="{Binding previewBmp}" VerticalAlignment="Top" />
+                    </WrapPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+
+
     </Grid>
 </Window>
